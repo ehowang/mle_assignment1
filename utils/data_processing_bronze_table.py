@@ -34,7 +34,7 @@ def process_bronze_table(snapshot_date_str, bronze_lms_directory, spark):
 
     return df
 
-def process_bronze_attribute_table(snapshot_date_str, bronze_lms_directory, spark):
+def process_bronze_attributes_table(snapshot_date_str, bronze_lms_directory, spark):
     """build bronze table for features_attributes.csv"""
     snapshot_date = datetime.strptime(snapshot_date_str, "%Y-%m-%d")
     csv_file_path = "data/features_attributes.csv"
@@ -65,7 +65,7 @@ def process_bronze_financials_table(snapshot_date_str, bronze_lms_directory, spa
 def process_bronze_clickstream_table(snapshot_date_str, bronze_lms_directory, spark):
     """build bronze table for features_clickstream.csv"""
     snapshot_date = datetime.strptime(snapshot_date_str, "%Y-%m-%d")
-    csv_file_path = "data/features_clickstream.csv"
+    csv_file_path = "data/feature_clickstream.csv"
     df = spark.read.csv(csv_file_path, header=True, inferSchema=True).filter(col('snapshot_date') == snapshot_date)
     print(snapshot_date_str + 'row count:', df.count())
 

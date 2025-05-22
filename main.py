@@ -62,24 +62,49 @@ print(dates_str_lst)
 
 # create bronze datalake
 bronze_lms_directory = "datamart/bronze/lms/"
+bronze_fin_directory="datamart/bronze/financials/"
+bronze_attri_directory="datamart/bronze/attributes/"
+bronze_click_directory="datamart/bronze/clickstream/"
 
 if not os.path.exists(bronze_lms_directory):
     os.makedirs(bronze_lms_directory)
+if not os.path.exists(bronze_fin_directory):
+    os.makedirs(bronze_fin_directory)
+if not os.path.exists(bronze_attri_directory):
+    os.makedirs(bronze_attri_directory)
+if not os.path.exists(bronze_click_directory):
+    os.makedirs(bronze_click_directory)
 
 # run bronze backfill
 for date_str in dates_str_lst:
     utils.data_processing_bronze_table.process_bronze_table(date_str, bronze_lms_directory, spark)
-
+    utils.data_processing_bronze_table.process_bronze_financials_table(date_str,bronze_fin_directory,spark)
+    utils.data_processing_bronze_table.process_bronze_attributes_table(date_str,bronze_attri_directory,spark)
+    utils.data_processing_bronze_table.process_bronze_clickstream_table(date_str,bronze_click_directory,spark)
 
 # create bronze datalake
 silver_loan_daily_directory = "datamart/silver/loan_daily/"
+sliver_fin_directory="datamart/silver/financials/"
+sliver_attri_directory="datamart/silver/attributes/"
+sliver_click_directory="datamart/silver/clickstream/"
 
 if not os.path.exists(silver_loan_daily_directory):
     os.makedirs(silver_loan_daily_directory)
 
+if not os.path.exists(sliver_fin_directory):
+    os.makedirs(sliver_fin_directory)
+
+if not os.path.exists(sliver_attri_directory):
+    os.makedirs(sliver_attri_directory)
+
+if not os.path.exists(sliver_click_directory):
+    os.makedirs(sliver_click_directory)
 # run silver backfill
 for date_str in dates_str_lst:
     utils.data_processing_silver_table.process_silver_table(date_str, bronze_lms_directory, silver_loan_daily_directory, spark)
+    utils.data_processing_silver_table.process_silver_financials_table(date_str,bronze_fin_directory,sliver_fin_directory,spark)
+    utils.data_processing_silver_table.process_silver_attributes_table(date_str,bronze_attri_directory,sliver_attri_directory,spark)
+    utils.data_processing_silver_table.process_silver_clickstream_table(date_str,bronze_click_directory,sliver_click_directory,spark)
 
 
 # create bronze datalake
@@ -88,11 +113,20 @@ gold_label_store_directory = "datamart/gold/label_store/"
 if not os.path.exists(gold_label_store_directory):
     os.makedirs(gold_label_store_directory)
 
+#feature store
+gold_features_store_directory = "datamart/gold/features_store/"
+
+silver_dir="datamart/silver/"
+
+if not os.path.exists(gold_features_store_directory):
+    os.makedirs(gold_features_store_directory)
 # run gold backfill
 for date_str in dates_str_lst:
     utils.data_processing_gold_table.process_labels_gold_table(date_str, silver_loan_daily_directory, gold_label_store_directory, spark, dpd = 30, mob = 6)
+    utils.data_processing_gold_table.process_features_gold_table(date_str, silver_dir, gold_features_store_directory, spark)
 
 
+print("\nlabel store show\n")
 folder_path = gold_label_store_directory
 files_list = [folder_path+os.path.basename(f) for f in glob.glob(os.path.join(folder_path, '*'))]
 df = spark.read.option("header", "true").parquet(*files_list)
@@ -100,6 +134,13 @@ print("row_count:",df.count())
 
 df.show()
 
+print("\nfeatures store show\n")
 
+feature_folder_path = gold_features_store_directory
+files_list = [folder_path+os.path.basename(f) for f in glob.glob(os.path.join(feature_folder_path, '*'))]
+feature_df = spark.read.option("header", "true").parquet(*files_list)
+print("row_count:",feature_df.count())
+
+feature_df.show()
 
     
