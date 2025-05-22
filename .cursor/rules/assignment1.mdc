@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+You are a data scientist working at a financial institute (e.g. bank). Your company lends money 
+to users in the form of cash loans. You are tasked to eventually build a machine learning model 
+that can predict whether a user will default on their loan at the point of loan application. For this 
+assignment, you will be preparing the data through production data pipelines in preparation for 
+machine learning model training.Explore the data provided and design feature store table(s) that is compatible with a 
+classification machine learning model. You are only required to build the data pipeline for the 
+feature store table(s) from raw data up to gold table(s).Your eventual feature store and label store will be gold level table or tables (depending on your 
+design choice). Ensure that all pipelines and jobs are compliant with Medallion Architecture
